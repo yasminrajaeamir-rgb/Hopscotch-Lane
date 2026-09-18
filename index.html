@@ -2,330 +2,163 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Hopscotch Lane</title>
 
 <style>
-* {
-  box-sizing: border-box;
-  -webkit-tap-highlight-color: transparent;
-}
-
-body {
-  margin: 0;
-  font-family: Arial, sans-serif;
-  background: #f6c6a8;
-  overflow: hidden;
-  color: #3d302a;
-}
-
-#game {
-  width: 100vw;
-  height: 100vh;
-  position: relative;
-  overflow: hidden;
-}
-
-/* TOP BAR */
-#topBar {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 70px;
-  background: rgba(255,255,255,0.94);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 10px 18px;
-  z-index: 20;
-  box-shadow: 0 3px 10px rgba(0,0,0,0.15);
-}
-
-.logo {
-  font-size: 23px;
-  font-weight: bold;
-}
-
-.stats {
-  display: flex;
-  gap: 15px;
-  align-items: center;
-}
-
-.coin {
-  font-weight: bold;
-  font-size: 18px;
-}
-
-.clock {
-  background: #eee;
-  padding: 8px 12px;
-  border-radius: 12px;
-  font-weight: bold;
-}
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:#f5c5a7;color:#342a27}
+#game{height:100vh;overflow:hidden;position:relative}
 
 /* TOWN */
-#town {
-  position: absolute;
-  top: 70px;
-  left: 0;
-  width: 100%;
-  height: calc(100% - 70px);
-  background: #b9df9a;
-}
+#town{position:absolute;inset:0;background:#a9d98b}
+.road1,.road2{position:absolute;background:#888}
+.road1{left:0;right:0;top:45%;height:110px}
+.road2{top:0;bottom:0;left:45%;width:110px}
+.road1:after{content:"";position:absolute;left:0;right:0;top:52px;border-top:5px dashed #ffe79b}
+.road2:after{content:"";position:absolute;top:0;bottom:0;left:52px;border-left:5px dashed #ffe79b}
 
-/* ROAD */
-.road {
-  position: absolute;
-  background: #8e8e8e;
+/* PLACES */
+.place{
+  position:absolute;
+  width:130px;
+  height:100px;
+  border:4px solid #6c5549;
+  border-radius:18px;
+  background:#fff4df;
+  text-align:center;
+  font-weight:bold;
+  font-size:16px;
+  padding-top:25px;
+  box-shadow:0 4px 7px #0003;
+  cursor:pointer;
 }
+.place:active{transform:scale(.96)}
 
-.road.horizontal {
-  width: 100%;
-  height: 125px;
-  top: 47%;
-  left: 0;
-}
-
-.road.vertical {
-  width: 125px;
-  height: 100%;
-  top: 0;
-  left: 47%;
-}
-
-.road.horizontal::after {
-  content: "";
-  position: absolute;
-  width: 100%;
-  top: 57px;
-  border-top: 6px dashed #f7e7a1;
-}
-
-.road.vertical::after {
-  content: "";
-  position: absolute;
-  height: 100%;
-  left: 57px;
-  border-left: 6px dashed #f7e7a1;
-}
-
-/* BUILDINGS */
-.building {
-  position: absolute;
-  width: 145px;
-  height: 115px;
-  background: #fff5df;
-  border: 5px solid #705b50;
-  border-radius: 14px;
-  text-align: center;
-  padding-top: 32px;
-  font-weight: bold;
-  font-size: 17px;
-  cursor: pointer;
-  box-shadow: 0 5px 0 rgba(0,0,0,0.12);
-  user-select: none;
-}
-
-.building:hover {
-  transform: scale(1.03);
-}
-
-.shop {
-  left: 7%;
-  top: 10%;
-}
-
-.house {
-  right: 7%;
-  top: 10%;
-  background: #ffe1d3;
-}
-
-.park {
-  left: 7%;
-  bottom: 10%;
-  background: #d8f0bf;
-}
-
-.job {
-  right: 7%;
-  bottom: 10%;
-  background: #d9e9ff;
-}
+#home{left:5%;top:7%;background:#ffdcca}
+#shop{right:5%;top:7%;background:#fff0b8}
+#kitchen{left:5%;bottom:8%;background:#ffe8d4}
+#park{right:5%;bottom:8%;background:#d8f2bd}
+#job{left:42%;top:16%;background:#dceaff}
 
 /* PLAYER */
-#player {
-  position: absolute;
-  width: 48px;
-  height: 48px;
-  background: #ff6f91;
-  border: 4px solid white;
-  border-radius: 50%;
-  left: 50%;
-  top: 58%;
-  transform: translate(-50%, -50%);
-  z-index: 10;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.25);
-  transition: left 0.12s, top 0.12s;
+#player{
+  position:absolute;
+  width:48px;
+  height:48px;
+  border-radius:50%;
+  border:4px solid white;
+  background:#ff6f91;
+  left:50%;
+  top:55%;
+  transform:translate(-50%,-50%);
+  z-index:3;
+  box-shadow:0 4px 8px #0004;
 }
-
-#player::before {
-  content: "★";
-  position: absolute;
-  color: white;
-  font-size: 23px;
-  left: 9px;
-  top: 6px;
+#player:after{
+  content:"★";
+  color:white;
+  position:absolute;
+  font-size:23px;
+  left:9px;
+  top:6px;
 }
 
 /* CONTROLS */
-#controls {
-  position: absolute;
-  bottom: 18px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 30;
-  display: grid;
-  grid-template-columns: 62px 62px 62px;
-  grid-template-rows: 62px 62px;
-  gap: 6px;
+#controls{
+  position:absolute;
+  z-index:8;
+  bottom:15px;
+  left:50%;
+  transform:translateX(-50%);
+  display:grid;
+  grid-template-columns:58px 58px 58px;
+  grid-template-rows:58px 58px;
+  gap:5px;
 }
-
-.control {
-  border: none;
-  border-radius: 16px;
-  background: white;
-  font-size: 25px;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-  cursor: pointer;
+.ctrl{
+  border:0;
+  border-radius:15px;
+  background:white;
+  font-size:24px;
+  box-shadow:0 3px 7px #0004;
 }
-
-.control:active {
-  transform: scale(0.92);
-}
-
-.up { grid-column: 2; }
-.left { grid-column: 1; grid-row: 2; }
-.down { grid-column: 2; grid-row: 2; }
-.right { grid-column: 3; grid-row: 2; }
+.up{grid-column:2}
+.left{grid-column:1;grid-row:2}
+.down{grid-column:2;grid-row:2}
+.right{grid-column:3;grid-row:2}
 
 /* MENU */
-#menuButton {
-  position: absolute;
-  top: 85px;
-  right: 15px;
-  z-index: 30;
-  border: none;
-  background: white;
-  border-radius: 12px;
-  padding: 10px 14px;
-  font-weight: bold;
-  font-size: 16px;
-  box-shadow: 0 3px 8px rgba(0,0,0,0.2);
+#menu{
+  position:absolute;
+  right:12px;
+  top:15px;
+  z-index:8;
+  border:0;
+  border-radius:12px;
+  background:white;
+  padding:9px 13px;
+  font-weight:bold;
+  box-shadow:0 3px 7px #0003;
 }
 
 /* MODAL */
-#modal {
-  display: none;
-  position: absolute;
-  z-index: 100;
-  inset: 0;
-  background: rgba(0,0,0,0.45);
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
+#modal{
+  display:none;
+  position:absolute;
+  inset:0;
+  background:#0007;
+  z-index:20;
+  align-items:center;
+  justify-content:center;
+  padding:15px;
 }
-
-.panel {
-  width: min(430px, 95vw);
-  max-height: 85vh;
-  overflow: auto;
-  background: white;
-  border-radius: 24px;
-  padding: 25px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-  text-align: center;
+.panel{
+  background:white;
+  border-radius:22px;
+  width:min(450px,95vw);
+  max-height:88vh;
+  overflow:auto;
+  padding:22px;
+  text-align:center;
 }
-
-.panel h2 {
-  margin-top: 0;
+.panel h2{margin-top:0}
+button.action{
+  display:block;
+  width:100%;
+  margin:7px 0;
+  padding:13px;
+  border:0;
+  border-radius:13px;
+  background:#ffd2df;
+  font-size:16px;
+  font-weight:bold;
 }
-
-.panel button {
-  width: 100%;
-  border: none;
-  padding: 14px;
-  margin: 7px 0;
-  border-radius: 14px;
-  background: #ffd1dc;
-  font-size: 17px;
-  font-weight: bold;
-  cursor: pointer;
+button.close{background:#ddd}
+.row{
+  display:flex;
+  gap:8px;
+  justify-content:center;
+  flex-wrap:wrap;
 }
-
-.panel button:active {
-  transform: scale(0.97);
+.choice{
+  padding:10px;
+  border:2px solid #ddd;
+  border-radius:12px;
+  background:#fafafa;
 }
-
-.close {
-  background: #ddd !important;
-}
-
-/* NOTIFICATION */
-#notification {
-  position: absolute;
-  left: 50%;
-  top: 85px;
-  transform: translateX(-50%);
-  background: white;
-  padding: 12px 18px;
-  border-radius: 15px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-  z-index: 90;
-  display: none;
-  font-weight: bold;
-}
-
-/* SMALL SCREENS */
-@media (max-width: 600px) {
-  .logo {
-    font-size: 18px;
-  }
-
-  .coin {
-    font-size: 15px;
-  }
-
-  .clock {
-    font-size: 13px;
-    padding: 6px 8px;
-  }
-
-  .building {
-    width: 105px;
-    height: 85px;
-    font-size: 14px;
-    padding-top: 24px;
-  }
-
-  .road.horizontal {
-    height: 100px;
-  }
-
-  .road.vertical {
-    width: 100px;
-    left: 48%;
-  }
-
-  .road.horizontal::after {
-    top: 47px;
-  }
-
-  .road.vertical::after {
-    left: 47px;
-  }
+#toast{
+  display:none;
+  position:absolute;
+  z-index:30;
+  top:15px;
+  left:50%;
+  transform:translateX(-50%);
+  background:white;
+  padding:11px 17px;
+  border-radius:14px;
+  box-shadow:0 3px 8px #0004;
+  font-weight:bold;
 }
 </style>
 </head>
@@ -334,49 +167,45 @@ body {
 
 <div id="game">
 
-  <div id="topBar">
-    <div class="logo">🏘️ Hopscotch Lane</div>
-
-    <div class="stats">
-      <div class="coin">🪙 <span id="coins">1200</span></div>
-      <div class="clock" id="clock">8:00 AM</div>
-    </div>
-  </div>
-
   <div id="town">
 
-    <div class="road horizontal"></div>
-    <div class="road vertical"></div>
+    <div class="road1"></div>
+    <div class="road2"></div>
 
-    <div class="building shop" onclick="openShop()">
-      🛍️<br>Shop
+    <div id="home" class="place" onclick="openHome()">
+      🏠<br>My Home
     </div>
 
-    <div class="building house" onclick="showMessage('This is your home! 🏠')">
-      🏠<br>My House
+    <div id="shop" class="place" onclick="openShop()">
+      🛍️<br>Market
     </div>
 
-    <div class="building park" onclick="visitPark()">
+    <div id="kitchen" class="place" onclick="openKitchen()">
+      🍳<br>Kitchen
+    </div>
+
+    <div id="park" class="place" onclick="openPark()">
       🌳<br>Park
     </div>
 
-    <div class="building job" onclick="doJob()">
+    <div id="job" class="place" onclick="openJobs()">
       💼<br>Jobs
     </div>
 
     <div id="player"></div>
+
   </div>
 
-  <button id="menuButton" onclick="openMenu()">☰ Menu</button>
+  <button id="menu" onclick="openMenu()">☰</button>
 
   <div id="controls">
-    <button class="control up" onclick="move(0,-1)">▲</button>
-    <button class="control left" onclick="move(-1,0)">◀</button>
-    <button class="control down" onclick="move(0,1)">▼</button>
-    <button class="control right" onclick="move(1,0)">▶</button>
+    <button class="ctrl up" onclick="move(0,-1)">▲</button>
+    <button class="ctrl left" onclick="move(-1,0)">◀</button>
+    <button class="ctrl down" onclick="move(0,1)">▼</button>
+    <button class="ctrl right" onclick="move(1,0)">▶</button>
   </div>
 
-  <div id="notification"></div>
+  <div id="toast"></div>
 
   <div id="modal">
     <div class="panel" id="panel"></div>
@@ -385,365 +214,441 @@ body {
 </div>
 
 <script>
-/* =========================
-   GAME DATA
-========================= */
+let coins=1200;
+let gameMinutes=480;
+let x=50,y=55;
+let inventory=[];
+let character={
+  skin:"#f2c29b",
+  hair:"#3b2417",
+  shirt:"#ff6f91",
+  pants:"#5865a8"
+};
 
-let coins = 1200;
-
-let gameMinutes = 8 * 60;
-
-// 1 real minute = 8 game minutes
-const GAME_MINUTES_PER_REAL_MINUTE = 8;
-
-let playerX = 50;
-let playerY = 58;
-
-let inventory = [];
-
-/* =========================
-   SAVE / LOAD
-========================= */
-
-function saveGame() {
-  const data = {
-    coins: coins,
-    gameMinutes: gameMinutes,
-    inventory: inventory
-  };
-
-  localStorage.setItem("hopscotchLaneSave", JSON.stringify(data));
-}
-
-function loadGame() {
-  const saved = localStorage.getItem("hopscotchLaneSave");
-
-  if (saved) {
-    try {
-      const data = JSON.parse(saved);
-
-      coins = typeof data.coins === "number" ? data.coins : 1200;
-      gameMinutes = typeof data.gameMinutes === "number"
-        ? data.gameMinutes
-        : 8 * 60;
-
-      inventory = Array.isArray(data.inventory)
-        ? data.inventory
-        : [];
-    } catch {
-      coins = 1200;
-      gameMinutes = 8 * 60;
-      inventory = [];
-    }
-  }
-
-  updateCoins();
-  updateClock();
-}
-
-/* =========================
-   COINS
-========================= */
-
-function updateCoins() {
-  document.getElementById("coins").textContent =
-    Math.floor(coins).toLocaleString();
-}
-
-function addCoins(amount) {
-  coins += amount;
-  updateCoins();
-  saveGame();
-}
-
-/* =========================
-   CLOCK
-========================= */
-
-function formatTime(minutes) {
-  minutes = minutes % (24 * 60);
-
-  let hour = Math.floor(minutes / 60);
-  let minute = minutes % 60;
-
-  let suffix = hour >= 12 ? "PM" : "AM";
-
-  let displayHour = hour % 12;
-
-  if (displayHour === 0) {
-    displayHour = 12;
-  }
-
-  return displayHour + ":" +
-    String(minute).padStart(2,"0") +
-    " " + suffix;
-}
-
-function updateClock() {
-  document.getElementById("clock").textContent =
-    formatTime(gameMinutes);
-}
-
-/*
-   Every real second = 8/60 game minutes.
-   Therefore one real minute = 8 game minutes.
-*/
-
-setInterval(function() {
-  gameMinutes += GAME_MINUTES_PER_REAL_MINUTE / 60;
-
-  updateClock();
-  saveGame();
-}, 1000);
-
-/* =========================
-   PLAYER MOVEMENT
-========================= */
-
-function move(dx, dy) {
-  playerX += dx * 4;
-  playerY += dy * 4;
-
-  playerX = Math.max(4, Math.min(96, playerX));
-  playerY = Math.max(5, Math.min(95, playerY));
-
-  const player = document.getElementById("player");
-
-  player.style.left = playerX + "%";
-  player.style.top = playerY + "%";
-}
-
-document.addEventListener("keydown", function(event) {
-
-  if (event.key === "ArrowUp" || event.key.toLowerCase() === "w") {
-    move(0,-1);
-  }
-
-  if (event.key === "ArrowDown" || event.key.toLowerCase() === "s") {
-    move(0,1);
-  }
-
-  if (event.key === "ArrowLeft" || event.key.toLowerCase() === "a") {
-    move(-1,0);
-  }
-
-  if (event.key === "ArrowRight" || event.key.toLowerCase() === "d") {
-    move(1,0);
-  }
-});
-
-/* =========================
-   SHOP
-========================= */
-
-function openShop() {
-
-  document.getElementById("panel").innerHTML = `
-    <h2>🛍️ Hopscotch Shop</h2>
-
-    <p>You have 🪙 ${Math.floor(coins).toLocaleString()} coins.</p>
-
-    <button onclick="buyItem('Apple',50)">
-      🍎 Apple — 50 coins
-    </button>
-
-    <button onclick="buyItem('Backpack',150)">
-      🎒 Backpack — 150 coins
-    </button>
-
-    <button onclick="buyItem('Skateboard',300)">
-      🛹 Skateboard — 300 coins
-    </button>
-
-    <button onclick="buyItem('Bicycle',500)">
-      🚲 Bicycle — 500 coins
-    </button>
-
-    <button class="close" onclick="closeModal()">
-      Close
-    </button>
-  `;
-
-  openModal();
-}
-
-function buyItem(item, price) {
-
-  if (coins < price) {
-    showMessage("You don't have enough coins! 🪙");
-    return;
-  }
-
-  coins -= price;
-  inventory.push(item);
-
-  updateCoins();
-  saveGame();
-
-  showMessage("You bought a " + item + "! 🎉");
-}
-
-/* =========================
-   JOBS
-========================= */
-
-function doJob() {
-
-  const reward = 100;
-
-  addCoins(reward);
-
-  showMessage("You worked a job and earned 🪙 " + reward + "!");
-}
-
-/* =========================
-   PARK
-========================= */
-
-function visitPark() {
-
-  const rewards = [10, 15, 20, 25, 30];
-
-  const reward =
-    rewards[Math.floor(Math.random() * rewards.length)];
-
-  addCoins(reward);
-
-  showMessage(
-    "You enjoyed the park! 🌳 You found 🪙 " +
-    reward + "!"
+/* SAVE */
+function save(){
+  localStorage.setItem(
+    "hopscotchLane",
+    JSON.stringify({
+      coins,
+      gameMinutes,
+      inventory,
+      character
+    })
   );
 }
 
-/* =========================
-   MENU
-========================= */
+/* LOAD */
+function load(){
+  let s=localStorage.getItem("hopscotchLane");
 
-function openMenu() {
+  if(s){
+    try{
+      let d=JSON.parse(s);
 
-  document.getElementById("panel").innerHTML = `
-    <h2>🏘️ Hopscotch Lane</h2>
+      coins=d.coins??1200;
+      gameMinutes=d.gameMinutes??480;
+      inventory=d.inventory??[];
+      character=d.character??character;
 
-    <p><b>Coins:</b> 🪙 ${Math.floor(coins).toLocaleString()}</p>
+    }catch(e){}
+  }
 
-    <p><b>Time:</b> ${formatTime(gameMinutes)}</p>
-
-    <p><b>Inventory:</b></p>
-
-    <p>
-      ${
-        inventory.length
-        ? inventory.join(" • ")
-        : "Nothing yet!"
-      }
-    </p>
-
-    <button onclick="earnBonus()">
-      🎁 Daily Bonus
-    </button>
-
-    <button onclick="resetGame()">
-      🔄 Reset Game
-    </button>
-
-    <button class="close" onclick="closeModal()">
-      Close
-    </button>
-  `;
-
-  openModal();
+  update();
 }
 
-function earnBonus() {
+/* UPDATE */
+function update(){
+  document.getElementById("player").style.left=x+"%";
+  document.getElementById("player").style.top=y+"%";
+  document.getElementById("player").style.background=character.shirt;
+}
 
-  const today = new Date().toDateString();
+/* GAME CLOCK
+   1 real minute = 8 game minutes
+*/
+setInterval(()=>{
+  gameMinutes+=8/60;
+  save();
+},1000);
 
-  const lastBonus =
-    localStorage.getItem("hopscotchLaneBonus");
+/* COINS */
+function addCoins(n){
+  coins+=n;
+  save();
+}
 
-  if (lastBonus === today) {
-    showMessage("You already collected today's bonus! 🎁");
+/* MOVEMENT */
+function move(dx,dy){
+  x=Math.max(4,Math.min(96,x+dx*4));
+  y=Math.max(7,Math.min(94,y+dy*4));
+  update();
+}
+
+document.addEventListener("keydown",e=>{
+  if(e.key=="ArrowUp"||e.key.toLowerCase()=="w")move(0,-1);
+  if(e.key=="ArrowDown"||e.key.toLowerCase()=="s")move(0,1);
+  if(e.key=="ArrowLeft"||e.key.toLowerCase()=="a")move(-1,0);
+  if(e.key=="ArrowRight"||e.key.toLowerCase()=="d")move(1,0);
+});
+
+/* MODAL */
+function modal(html){
+  document.getElementById("panel").innerHTML=html;
+  document.getElementById("modal").style.display="flex";
+}
+
+function closeModal(){
+  document.getElementById("modal").style.display="none";
+}
+
+/* MESSAGE */
+function toast(t){
+  let a=document.getElementById("toast");
+  a.textContent=t;
+  a.style.display="block";
+
+  clearTimeout(window.toastTimer);
+
+  window.toastTimer=setTimeout(()=>{
+    a.style.display="none";
+  },2200);
+}
+
+/* HOME */
+function openHome(){
+  modal(`
+    <h2>🏠 My Home</h2>
+
+    <p>Welcome home!</p>
+
+    <button class="action" onclick="editCharacter()">
+      👤 Edit Character
+    </button>
+
+    <button class="action" onclick="showInventory()">
+      🎒 Inventory
+    </button>
+
+    <button class="action close" onclick="closeModal()">
+      Close
+    </button>
+  `);
+}
+
+/* CHARACTER */
+function editCharacter(){
+  modal(`
+    <h2>👤 Character Creator</h2>
+
+    <p><b>Skin</b></p>
+
+    <div class="row">
+      <button class="choice" onclick="setSkin('#f2c29b')">Light</button>
+      <button class="choice" onclick="setSkin('#c6865a')">Tan</button>
+      <button class="choice" onclick="setSkin('#75452d')">Brown</button>
+    </div>
+
+    <p><b>Hair</b></p>
+
+    <div class="row">
+      <button class="choice" onclick="setHair('#3b2417')">Brown</button>
+      <button class="choice" onclick="setHair('#111')">Black</button>
+      <button class="choice" onclick="setHair('#d9b04c')">Blonde</button>
+    </div>
+
+    <p><b>Shirt</b></p>
+
+    <div class="row">
+      <button class="choice" onclick="setShirt('#ff6f91')">Pink</button>
+      <button class="choice" onclick="setShirt('#5c8dff')">Blue</button>
+      <button class="choice" onclick="setShirt('#63c174')">Green</button>
+      <button class="choice" onclick="setShirt('#9a62d9')">Purple</button>
+    </div>
+
+    <p><b>Pants</b></p>
+
+    <div class="row">
+      <button class="choice" onclick="setPants('#5865a8')">Blue</button>
+      <button class="choice" onclick="setPants('#444')">Black</button>
+      <button class="choice" onclick="setPants('#d58b4d')">Brown</button>
+    </div>
+
+    <button class="action close" onclick="closeModal()">
+      Done
+    </button>
+  `);
+}
+
+function setSkin(c){
+  character.skin=c;
+  save();
+  toast("Skin changed!");
+}
+
+function setHair(c){
+  character.hair=c;
+  save();
+  toast("Hair changed!");
+}
+
+function setShirt(c){
+  character.shirt=c;
+  update();
+  save();
+  toast("Shirt changed!");
+}
+
+function setPants(c){
+  character.pants=c;
+  save();
+  toast("Pants changed!");
+}
+
+/* SHOP */
+function openShop(){
+  modal(`
+    <h2>🛍️ Hopscotch Market</h2>
+
+    <p>Coins: 🪙 ${Math.floor(coins).toLocaleString()}</p>
+
+    <button class="action" onclick="buy('Bread',35)">🍞 Bread — 35</button>
+    <button class="action" onclick="buy('Apple',25)">🍎 Apple — 25</button>
+    <button class="action" onclick="buy('Milk',30)">🥛 Milk — 30</button>
+    <button class="action" onclick="buy('Eggs',45)">🥚 Eggs — 45</button>
+    <button class="action" onclick="buy('Flour',40)">🌾 Flour — 40</button>
+
+    <button class="action" onclick="buy('Backpack',150)">🎒 Backpack — 150</button>
+    <button class="action" onclick="buy('Skateboard',300)">🛹 Skateboard — 300</button>
+    <button class="action" onclick="buy('Bicycle',500)">🚲 Bicycle — 500</button>
+    <button class="action" onclick="buy('Lamp',120)">💡 Lamp — 120</button>
+    <button class="action" onclick="buy('Plant',80)">🪴 Plant — 80</button>
+
+    <button class="action close" onclick="closeModal()">Close</button>
+  `);
+}
+
+function buy(item,price){
+  if(coins<price){
+    toast("Not enough coins!");
     return;
   }
 
-  localStorage.setItem("hopscotchLaneBonus", today);
+  coins-=price;
+  inventory.push(item);
+
+  save();
+
+  toast(item+" bought! 🎉");
+}
+
+/* COOKING */
+function openKitchen(){
+  modal(`
+    <h2>🍳 Kitchen</h2>
+
+    <p>Buy ingredients at the Market, then cook!</p>
+
+    <button class="action" onclick="cook('Toast',['Bread'],60)">
+      🍞 Make Toast
+    </button>
+
+    <button class="action" onclick="cook('Apple Pie',['Apple','Bread'],120)">
+      🥧 Make Apple Pie
+    </button>
+
+    <button class="action" onclick="cook('Pancakes',['Flour','Eggs','Milk'],180)">
+      🥞 Make Pancakes
+    </button>
+
+    <button class="action" onclick="cook('Breakfast',['Eggs','Bread','Milk'],200)">
+      🍳 Make Breakfast
+    </button>
+
+    <button class="action close" onclick="closeModal()">Close</button>
+  `);
+}
+
+function cook(name,ingredients,reward){
+
+  let copy=[...inventory];
+
+  for(let item of ingredients){
+
+    let index=copy.indexOf(item);
+
+    if(index===-1){
+      toast("You need "+ingredients.join(", ")+"!");
+      return;
+    }
+
+    copy.splice(index,1);
+  }
+
+  inventory=copy;
+  inventory.push(name+" 🍽️");
+
+  addCoins(reward);
+
+  toast(name+" cooked! +🪙 "+reward);
+}
+
+/* JOBS */
+function openJobs(){
+  modal(`
+    <h2>💼 Jobs</h2>
+
+    <p>Choose a job.</p>
+
+    <button class="action" onclick="job('Delivery',90)">
+      📦 Delivery — +90
+    </button>
+
+    <button class="action" onclick="job('Gardening',75)">
+      🌱 Gardening — +75
+    </button>
+
+    <button class="action" onclick="job('Cafe',110)">
+      ☕ Cafe — +110
+    </button>
+
+    <button class="action" onclick="job('Town Helper',140)">
+      🏘️ Town Helper — +140
+    </button>
+
+    <button class="action close" onclick="closeModal()">Close</button>
+  `);
+}
+
+function job(name,reward){
+  addCoins(reward);
+  toast(name+" completed! +🪙 "+reward);
+}
+
+/* PARK */
+function openPark(){
+  modal(`
+    <h2>🌳 Park</h2>
+
+    <p>Have some fun!</p>
+
+    <button class="action" onclick="parkGame()">
+      🎯 Find Coins
+    </button>
+
+    <button class="action" onclick="parkGame()">
+      🪁 Play
+    </button>
+
+    <button class="action close" onclick="closeModal()">
+      Leave Park
+    </button>
+  `);
+}
+
+function parkGame(){
+  let reward=Math.floor(Math.random()*41)+10;
+
+  addCoins(reward);
+
+  toast("You found 🪙 "+reward+"!");
+}
+
+/* INVENTORY */
+function showInventory(){
+  modal(`
+    <h2>🎒 Inventory</h2>
+
+    <p>
+      ${inventory.length
+        ? inventory.join(" • ")
+        : "Your inventory is empty."}
+    </p>
+
+    <button class="action close" onclick="closeModal()">
+      Close
+    </button>
+  `);
+}
+
+/* MENU */
+function openMenu(){
+  modal(`
+    <h2>🏘️ Hopscotch Lane</h2>
+
+    <p>🪙 ${Math.floor(coins).toLocaleString()} coins</p>
+    <p>🕐 Game time is running!</p>
+
+    <button class="action" onclick="editCharacter()">
+      👤 Character
+    </button>
+
+    <button class="action" onclick="showInventory()">
+      🎒 Inventory
+    </button>
+
+    <button class="action" onclick="bonus()">
+      🎁 Daily Bonus
+    </button>
+
+    <button class="action" onclick="resetGame()">
+      🔄 New Game
+    </button>
+
+    <button class="action close" onclick="closeModal()">
+      Close
+    </button>
+  `);
+}
+
+/* BONUS */
+function bonus(){
+
+  let today=new Date().toDateString();
+
+  if(localStorage.getItem("hopscotchBonus")==today){
+    toast("Bonus already collected today!");
+    return;
+  }
+
+  localStorage.setItem("hopscotchBonus",today);
 
   addCoins(250);
 
   closeModal();
 
-  showMessage("Daily bonus: +🪙 250!");
+  toast("Daily bonus! +🪙 250");
 }
 
-/* =========================
-   RESET
-========================= */
+/* RESET */
+function resetGame(){
 
-function resetGame() {
+  if(!confirm("Start a new Hopscotch Lane game?"))return;
 
-  const confirmed =
-    confirm("Reset Hopscotch Lane and start again with 1,200 coins?");
+  coins=1200;
+  gameMinutes=480;
+  inventory=[];
+  x=50;
+  y=55;
 
-  if (!confirmed) return;
+  character={
+    skin:"#f2c29b",
+    hair:"#3b2417",
+    shirt:"#ff6f91",
+    pants:"#5865a8"
+  };
 
-  coins = 1200;
-  gameMinutes = 8 * 60;
-  inventory = [];
+  localStorage.removeItem("hopscotchLane");
+  localStorage.removeItem("hopscotchBonus");
 
-  localStorage.removeItem("hopscotchLaneSave");
-  localStorage.removeItem("hopscotchLaneBonus");
-
-  updateCoins();
-  updateClock();
-
+  update();
   closeModal();
 
-  showMessage("New game started! 🏘️");
+  toast("New game started! 🎉");
 }
 
-/* =========================
-   MODAL
-========================= */
-
-function openModal() {
-  document.getElementById("modal").style.display = "flex";
-}
-
-function closeModal() {
-  document.getElementById("modal").style.display = "none";
-}
-
-/* =========================
-   NOTIFICATIONS
-========================= */
-
-let notificationTimer;
-
-function showMessage(message) {
-
-  const box = document.getElementById("notification");
-
-  box.textContent = message;
-  box.style.display = "block";
-
-  clearTimeout(notificationTimer);
-
-  notificationTimer = setTimeout(function() {
-    box.style.display = "none";
-  }, 2200);
-}
-
-/* =========================
-   START GAME
-========================= */
-
-loadGame();
-
-updateCoins();
-updateClock();
-
+load();
 </script>
 
 </body>
 </html>
-  
