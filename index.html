@@ -1,67 +1,749 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Hopscotch Lane</title>
 
 <style>
 * {
   box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
 }
 
 body {
   margin: 0;
-  font-family: Arial, Helvetica, sans-serif;
-  background: #fff6ec;
-  color: #3a2b25;
+  font-family: Arial, sans-serif;
+  background: #f6c6a8;
+  overflow: hidden;
+  color: #3d302a;
 }
 
-button {
-  font: inherit;
-  border: 0;
-  cursor: pointer;
+#game {
+  width: 100vw;
+  height: 100vh;
+  position: relative;
+  overflow: hidden;
 }
 
-.app {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-}
-
-header {
-  height: 72px;
-  background: #ffcf4a;
+/* TOP BAR */
+#topBar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 70px;
+  background: rgba(255,255,255,0.94);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 18px;
-  position: sticky;
+  padding: 10px 18px;
+  z-index: 20;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.15);
+}
+
+.logo {
+  font-size: 23px;
+  font-weight: bold;
+}
+
+.stats {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+}
+
+.coin {
+  font-weight: bold;
+  font-size: 18px;
+}
+
+.clock {
+  background: #eee;
+  padding: 8px 12px;
+  border-radius: 12px;
+  font-weight: bold;
+}
+
+/* TOWN */
+#town {
+  position: absolute;
+  top: 70px;
+  left: 0;
+  width: 100%;
+  height: calc(100% - 70px);
+  background: #b9df9a;
+}
+
+/* ROAD */
+.road {
+  position: absolute;
+  background: #8e8e8e;
+}
+
+.road.horizontal {
+  width: 100%;
+  height: 125px;
+  top: 47%;
+  left: 0;
+}
+
+.road.vertical {
+  width: 125px;
+  height: 100%;
   top: 0;
-  z-index: 5;
-  box-shadow: 0 2px 8px #0002;
+  left: 47%;
 }
 
-.navbtn {
-  background: white;
+.road.horizontal::after {
+  content: "";
+  position: absolute;
+  width: 100%;
+  top: 57px;
+  border-top: 6px dashed #f7e7a1;
+}
+
+.road.vertical::after {
+  content: "";
+  position: absolute;
+  height: 100%;
+  left: 57px;
+  border-left: 6px dashed #f7e7a1;
+}
+
+/* BUILDINGS */
+.building {
+  position: absolute;
+  width: 145px;
+  height: 115px;
+  background: #fff5df;
+  border: 5px solid #705b50;
+  border-radius: 14px;
+  text-align: center;
+  padding-top: 32px;
+  font-weight: bold;
+  font-size: 17px;
+  cursor: pointer;
+  box-shadow: 0 5px 0 rgba(0,0,0,0.12);
+  user-select: none;
+}
+
+.building:hover {
+  transform: scale(1.03);
+}
+
+.shop {
+  left: 7%;
+  top: 10%;
+}
+
+.house {
+  right: 7%;
+  top: 10%;
+  background: #ffe1d3;
+}
+
+.park {
+  left: 7%;
+  bottom: 10%;
+  background: #d8f0bf;
+}
+
+.job {
+  right: 7%;
+  bottom: 10%;
+  background: #d9e9ff;
+}
+
+/* PLAYER */
+#player {
+  position: absolute;
+  width: 48px;
+  height: 48px;
+  background: #ff6f91;
+  border: 4px solid white;
+  border-radius: 50%;
+  left: 50%;
+  top: 58%;
+  transform: translate(-50%, -50%);
+  z-index: 10;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.25);
+  transition: left 0.12s, top 0.12s;
+}
+
+#player::before {
+  content: "★";
+  position: absolute;
+  color: white;
+  font-size: 23px;
+  left: 9px;
+  top: 6px;
+}
+
+/* CONTROLS */
+#controls {
+  position: absolute;
+  bottom: 18px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 30;
+  display: grid;
+  grid-template-columns: 62px 62px 62px;
+  grid-template-rows: 62px 62px;
+  gap: 6px;
+}
+
+.control {
+  border: none;
   border-radius: 16px;
-  padding: 10px 15px;
-  font-weight: 800;
-  box-shadow: 0 2px 5px #0002;
-}
-
-.brand {
-  font-size: 25px;
-  font-weight: 900;
-  color: #5d3a20;
-}
-
-.coins {
   background: white;
-  border-radius: 20px;
-  padding: 9px 13px;
-  font-weight: 900;
+  font-size: 25px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  cursor: pointer;
 }
 
-main {
- 
+.control:active {
+  transform: scale(0.92);
+}
+
+.up { grid-column: 2; }
+.left { grid-column: 1; grid-row: 2; }
+.down { grid-column: 2; grid-row: 2; }
+.right { grid-column: 3; grid-row: 2; }
+
+/* MENU */
+#menuButton {
+  position: absolute;
+  top: 85px;
+  right: 15px;
+  z-index: 30;
+  border: none;
+  background: white;
+  border-radius: 12px;
+  padding: 10px 14px;
+  font-weight: bold;
+  font-size: 16px;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.2);
+}
+
+/* MODAL */
+#modal {
+  display: none;
+  position: absolute;
+  z-index: 100;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.panel {
+  width: min(430px, 95vw);
+  max-height: 85vh;
+  overflow: auto;
+  background: white;
+  border-radius: 24px;
+  padding: 25px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+  text-align: center;
+}
+
+.panel h2 {
+  margin-top: 0;
+}
+
+.panel button {
+  width: 100%;
+  border: none;
+  padding: 14px;
+  margin: 7px 0;
+  border-radius: 14px;
+  background: #ffd1dc;
+  font-size: 17px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.panel button:active {
+  transform: scale(0.97);
+}
+
+.close {
+  background: #ddd !important;
+}
+
+/* NOTIFICATION */
+#notification {
+  position: absolute;
+  left: 50%;
+  top: 85px;
+  transform: translateX(-50%);
+  background: white;
+  padding: 12px 18px;
+  border-radius: 15px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  z-index: 90;
+  display: none;
+  font-weight: bold;
+}
+
+/* SMALL SCREENS */
+@media (max-width: 600px) {
+  .logo {
+    font-size: 18px;
+  }
+
+  .coin {
+    font-size: 15px;
+  }
+
+  .clock {
+    font-size: 13px;
+    padding: 6px 8px;
+  }
+
+  .building {
+    width: 105px;
+    height: 85px;
+    font-size: 14px;
+    padding-top: 24px;
+  }
+
+  .road.horizontal {
+    height: 100px;
+  }
+
+  .road.vertical {
+    width: 100px;
+    left: 48%;
+  }
+
+  .road.horizontal::after {
+    top: 47px;
+  }
+
+  .road.vertical::after {
+    left: 47px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<div id="game">
+
+  <div id="topBar">
+    <div class="logo">🏘️ Hopscotch Lane</div>
+
+    <div class="stats">
+      <div class="coin">🪙 <span id="coins">1200</span></div>
+      <div class="clock" id="clock">8:00 AM</div>
+    </div>
+  </div>
+
+  <div id="town">
+
+    <div class="road horizontal"></div>
+    <div class="road vertical"></div>
+
+    <div class="building shop" onclick="openShop()">
+      🛍️<br>Shop
+    </div>
+
+    <div class="building house" onclick="showMessage('This is your home! 🏠')">
+      🏠<br>My House
+    </div>
+
+    <div class="building park" onclick="visitPark()">
+      🌳<br>Park
+    </div>
+
+    <div class="building job" onclick="doJob()">
+      💼<br>Jobs
+    </div>
+
+    <div id="player"></div>
+  </div>
+
+  <button id="menuButton" onclick="openMenu()">☰ Menu</button>
+
+  <div id="controls">
+    <button class="control up" onclick="move(0,-1)">▲</button>
+    <button class="control left" onclick="move(-1,0)">◀</button>
+    <button class="control down" onclick="move(0,1)">▼</button>
+    <button class="control right" onclick="move(1,0)">▶</button>
+  </div>
+
+  <div id="notification"></div>
+
+  <div id="modal">
+    <div class="panel" id="panel"></div>
+  </div>
+
+</div>
+
+<script>
+/* =========================
+   GAME DATA
+========================= */
+
+let coins = 1200;
+
+let gameMinutes = 8 * 60;
+
+// 1 real minute = 8 game minutes
+const GAME_MINUTES_PER_REAL_MINUTE = 8;
+
+let playerX = 50;
+let playerY = 58;
+
+let inventory = [];
+
+/* =========================
+   SAVE / LOAD
+========================= */
+
+function saveGame() {
+  const data = {
+    coins: coins,
+    gameMinutes: gameMinutes,
+    inventory: inventory
+  };
+
+  localStorage.setItem("hopscotchLaneSave", JSON.stringify(data));
+}
+
+function loadGame() {
+  const saved = localStorage.getItem("hopscotchLaneSave");
+
+  if (saved) {
+    try {
+      const data = JSON.parse(saved);
+
+      coins = typeof data.coins === "number" ? data.coins : 1200;
+      gameMinutes = typeof data.gameMinutes === "number"
+        ? data.gameMinutes
+        : 8 * 60;
+
+      inventory = Array.isArray(data.inventory)
+        ? data.inventory
+        : [];
+    } catch {
+      coins = 1200;
+      gameMinutes = 8 * 60;
+      inventory = [];
+    }
+  }
+
+  updateCoins();
+  updateClock();
+}
+
+/* =========================
+   COINS
+========================= */
+
+function updateCoins() {
+  document.getElementById("coins").textContent =
+    Math.floor(coins).toLocaleString();
+}
+
+function addCoins(amount) {
+  coins += amount;
+  updateCoins();
+  saveGame();
+}
+
+/* =========================
+   CLOCK
+========================= */
+
+function formatTime(minutes) {
+  minutes = minutes % (24 * 60);
+
+  let hour = Math.floor(minutes / 60);
+  let minute = minutes % 60;
+
+  let suffix = hour >= 12 ? "PM" : "AM";
+
+  let displayHour = hour % 12;
+
+  if (displayHour === 0) {
+    displayHour = 12;
+  }
+
+  return displayHour + ":" +
+    String(minute).padStart(2,"0") +
+    " " + suffix;
+}
+
+function updateClock() {
+  document.getElementById("clock").textContent =
+    formatTime(gameMinutes);
+}
+
+/*
+   Every real second = 8/60 game minutes.
+   Therefore one real minute = 8 game minutes.
+*/
+
+setInterval(function() {
+  gameMinutes += GAME_MINUTES_PER_REAL_MINUTE / 60;
+
+  updateClock();
+  saveGame();
+}, 1000);
+
+/* =========================
+   PLAYER MOVEMENT
+========================= */
+
+function move(dx, dy) {
+  playerX += dx * 4;
+  playerY += dy * 4;
+
+  playerX = Math.max(4, Math.min(96, playerX));
+  playerY = Math.max(5, Math.min(95, playerY));
+
+  const player = document.getElementById("player");
+
+  player.style.left = playerX + "%";
+  player.style.top = playerY + "%";
+}
+
+document.addEventListener("keydown", function(event) {
+
+  if (event.key === "ArrowUp" || event.key.toLowerCase() === "w") {
+    move(0,-1);
+  }
+
+  if (event.key === "ArrowDown" || event.key.toLowerCase() === "s") {
+    move(0,1);
+  }
+
+  if (event.key === "ArrowLeft" || event.key.toLowerCase() === "a") {
+    move(-1,0);
+  }
+
+  if (event.key === "ArrowRight" || event.key.toLowerCase() === "d") {
+    move(1,0);
+  }
+});
+
+/* =========================
+   SHOP
+========================= */
+
+function openShop() {
+
+  document.getElementById("panel").innerHTML = `
+    <h2>🛍️ Hopscotch Shop</h2>
+
+    <p>You have 🪙 ${Math.floor(coins).toLocaleString()} coins.</p>
+
+    <button onclick="buyItem('Apple',50)">
+      🍎 Apple — 50 coins
+    </button>
+
+    <button onclick="buyItem('Backpack',150)">
+      🎒 Backpack — 150 coins
+    </button>
+
+    <button onclick="buyItem('Skateboard',300)">
+      🛹 Skateboard — 300 coins
+    </button>
+
+    <button onclick="buyItem('Bicycle',500)">
+      🚲 Bicycle — 500 coins
+    </button>
+
+    <button class="close" onclick="closeModal()">
+      Close
+    </button>
+  `;
+
+  openModal();
+}
+
+function buyItem(item, price) {
+
+  if (coins < price) {
+    showMessage("You don't have enough coins! 🪙");
+    return;
+  }
+
+  coins -= price;
+  inventory.push(item);
+
+  updateCoins();
+  saveGame();
+
+  showMessage("You bought a " + item + "! 🎉");
+}
+
+/* =========================
+   JOBS
+========================= */
+
+function doJob() {
+
+  const reward = 100;
+
+  addCoins(reward);
+
+  showMessage("You worked a job and earned 🪙 " + reward + "!");
+}
+
+/* =========================
+   PARK
+========================= */
+
+function visitPark() {
+
+  const rewards = [10, 15, 20, 25, 30];
+
+  const reward =
+    rewards[Math.floor(Math.random() * rewards.length)];
+
+  addCoins(reward);
+
+  showMessage(
+    "You enjoyed the park! 🌳 You found 🪙 " +
+    reward + "!"
+  );
+}
+
+/* =========================
+   MENU
+========================= */
+
+function openMenu() {
+
+  document.getElementById("panel").innerHTML = `
+    <h2>🏘️ Hopscotch Lane</h2>
+
+    <p><b>Coins:</b> 🪙 ${Math.floor(coins).toLocaleString()}</p>
+
+    <p><b>Time:</b> ${formatTime(gameMinutes)}</p>
+
+    <p><b>Inventory:</b></p>
+
+    <p>
+      ${
+        inventory.length
+        ? inventory.join(" • ")
+        : "Nothing yet!"
+      }
+    </p>
+
+    <button onclick="earnBonus()">
+      🎁 Daily Bonus
+    </button>
+
+    <button onclick="resetGame()">
+      🔄 Reset Game
+    </button>
+
+    <button class="close" onclick="closeModal()">
+      Close
+    </button>
+  `;
+
+  openModal();
+}
+
+function earnBonus() {
+
+  const today = new Date().toDateString();
+
+  const lastBonus =
+    localStorage.getItem("hopscotchLaneBonus");
+
+  if (lastBonus === today) {
+    showMessage("You already collected today's bonus! 🎁");
+    return;
+  }
+
+  localStorage.setItem("hopscotchLaneBonus", today);
+
+  addCoins(250);
+
+  closeModal();
+
+  showMessage("Daily bonus: +🪙 250!");
+}
+
+/* =========================
+   RESET
+========================= */
+
+function resetGame() {
+
+  const confirmed =
+    confirm("Reset Hopscotch Lane and start again with 1,200 coins?");
+
+  if (!confirmed) return;
+
+  coins = 1200;
+  gameMinutes = 8 * 60;
+  inventory = [];
+
+  localStorage.removeItem("hopscotchLaneSave");
+  localStorage.removeItem("hopscotchLaneBonus");
+
+  updateCoins();
+  updateClock();
+
+  closeModal();
+
+  showMessage("New game started! 🏘️");
+}
+
+/* =========================
+   MODAL
+========================= */
+
+function openModal() {
+  document.getElementById("modal").style.display = "flex";
+}
+
+function closeModal() {
+  document.getElementById("modal").style.display = "none";
+}
+
+/* =========================
+   NOTIFICATIONS
+========================= */
+
+let notificationTimer;
+
+function showMessage(message) {
+
+  const box = document.getElementById("notification");
+
+  box.textContent = message;
+  box.style.display = "block";
+
+  clearTimeout(notificationTimer);
+
+  notificationTimer = setTimeout(function() {
+    box.style.display = "none";
+  }, 2200);
+}
+
+/* =========================
+   START GAME
+========================= */
+
+loadGame();
+
+updateCoins();
+updateClock();
+
+</script>
+
+</body>
+</html>
+  
